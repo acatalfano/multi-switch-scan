@@ -11,159 +11,159 @@
 
 
 
-// import { Observable, of } from 'rxjs';
+import type { Observable, of } from 'rxjs';
 
 // //TODO: this might not be used at all...
 // export type ObservableType<O> = O extends Observable<infer T> ? T : never;
 
-// export type AccumFn<R, T> =
-//     (acc: R, value: T, index?: number) => R;
+export type AccumFn<R, T> =
+    (acc: R, value: T, index?: number) => R;
 
-// export type SrcAccumPair<R, U> =
-//     [Observable<U>, AccumFn<R, U>];
+export type SrcAccumPair<R, U> =
+    [Observable<U>, AccumFn<R, U>];
 
-// export type IsSame<U, V> = (
-//     <T>() => (T extends U ? true : false)
-// ) extends (
-//         <T>() => (T extends V ? true : false)
-//     ) ? true : false;
+export type IsSame<U, V> = (
+    <T>() => (T extends U ? true : false)
+) extends (
+        <T>() => (T extends V ? true : false)
+    ) ? true : false;
 
-// export type PairList<R, L extends unknown[] = unknown[]> =
-//     PairListHelper<R, L> extends SrcAccumPair<R, any>[] ?
-//     SrcAccumPair<R, any>[] : never;
+export type PairList<R, L extends unknown[] = unknown[]> =
+    PairListHelper<R, L> extends SrcAccumPair<R, unknown>[] ?
+    SrcAccumPair<R, unknown>[] : never;
 
-// //export interface IndexMap<P extends any[]> {
+// // export interface IndexMap<P extends unknown[]> {
 // //     (): IndexMapHelper<P>;
 // // }
-// export type IndexMap<P extends any[]> = IndexMapHelper<P>;
+export type IndexMap<P extends unknown[]> = IndexMapHelper<P>;
 
-// export type AccumMap<R, L extends PairList<R>> =
-//     SrcListFromSrcAccumListHelper<R, L> extends (infer S) ?
-//     S extends any[] ?
-//     AccumMapHelper<R, S> : never : never;
+export type AccumMap<R, L extends PairList<R>> =
+    SrcListFromSrcAccumListHelper<R, L> extends (infer S) ?
+    S extends unknown[] ?
+    AccumMapHelper<R, S> : never : never;
 
-// export type SrcInPair<R, T extends SrcAccumPair<R, any>> =
-//     T extends SrcAccumPair<R, infer U> ? U : never;
+export type SrcInPair<R, T extends SrcAccumPair<R, unknown>> =
+    T extends SrcAccumPair<R, infer U> ? U : never;
 
 // //TODO: SrcUnion<R, P> is evaluated as:
-// //x    SrcUnion<R, L extends AccumSrcPair<R, any>[]> ---->
+// //x    SrcUnion<R, L extends AccumSrcPair<R, unknown>[]> ---->
 // //x        L extends void | [] ? never : SrcUnionRecurser<R, L, never>
-// // export interface SrcUnion<R, L extends AccumSrcPair<R, any>[]> {
+// // export interface SrcUnion<R, L extends AccumSrcPair<R, unknown>[]> {
 // //     (): SrcUnionHelper<R, L>;
 // // }
-// export type SrcUnion<R, L extends SrcAccumPair<R, any>[]> = SrcUnionHelper<R, L>;
+// export type SrcUnion<R, L extends SrcAccumPair<R, unknown>[]> = SrcUnionHelper<R, L>;
 
 // type trysrcunion<R> = SrcUnion<R, PairList<R, [number, string]>>;
 // type instant = trysrcunion<boolean>;
 
 // //TODO: this one here vvv just always evals to never
-// export type ValueIndexPair<R, P extends PairList<R>, S extends SrcUnion<R, P>> = {
-//     [K in keyof IndexMap<P>]: SrcInPair<R, IndexMap<P>[K]> extends S ? {
-//         value: SrcInPair<R, IndexMap<P>[K]>,
-//         index: K
-//     } : never
-// }[keyof IndexMap<P>];
+export type ValueIndexPair<R, P extends PairList<R>, S extends SrcUnion<R, P>> = {
+    [K in keyof IndexMap<P>]: SrcInPair<R, IndexMap<P>[K]> extends S ? {
+        value: SrcInPair<R, IndexMap<P>[K]>,
+        index: K
+    } : never
+}[keyof IndexMap<P>];
 
 // //TODO: fix ValueIndexPair
 // //TODO: kill the test type when done...
 // //TODO: actually, SrcUnion is the problem ^^^^
-// //ValueIndexPair<R, P extends AccumSrcPair<R, any>[], S extends SrcUnion<R, P>> = never;
+// //ValueIndexPair<R, P extends AccumSrcPair<R, unknown>[], S extends SrcUnion<R, P>> = never;
 // type TestValueIndexPair<R, P extends PairList<R>> = ValueIndexPair<R, P, SrcUnion<R, P>>;
 
-// export type SourceMapper<R, P extends PairList<R>, S extends SrcUnion<R, P>> =
-//     <I extends keyof IndexMap<P>>(
-//         // _value: IndexMap<P>[I] extends AccumSrcPair<R, infer U> ?
-//         //     IsSame<U, S> extends false ? U extends S ? AccumSrcPair<R, U> : never : never : never,
-//         _value: IndexMap<P>[I] extends SrcAccumPair<R, infer U> ?
-//             SrcAccumPair<R, U> : never,
-//         _index: I
-//     ) =>
-//         typeof _value extends SrcAccumPair<R, infer U> ?
-//         U extends S ?
-//         Observable<ValueIndexPair<R, P, U>> :
-//         never : never;
+export type SourceMapper<R, P extends PairList<R>, S extends SrcUnion<R, P>> =
+    <I extends keyof IndexMap<P>>(
+        // _value: IndexMap<P>[I] extends AccumSrcPair<R, infer U> ?
+        //     IsSame<U, S> extends false ? U extends S ? AccumSrcPair<R, U> : never : never : never,
+        _value: IndexMap<P>[I] extends SrcAccumPair<R, infer U> ?
+            SrcAccumPair<R, U> : never,
+        _index: I
+    ) =>
+        typeof _value extends SrcAccumPair<R, infer U> ?
+        U extends S ?
+        Observable<ValueIndexPair<R, P, U>> :
+        never : never;
 
-// type Head<T extends any[]> =
-//     T extends [any, ...any[]] ?
-//     T[0] : never;
+type Head<T extends unknown[]> =
+    T extends [unknown, ...unknown[]] ?
+    T[0] : never;
 
-// type Tail<T extends any[] | readonly any[]> =
-//     ((..._: T) => any) extends ((_: any, ...tail: infer TT) => any) ?
-//     TT : [];
+type Tail<T extends unknown[] | readonly unknown[]> =
+    ((..._: T) => unknown) extends ((_: unknown, ...tail: infer TT) => unknown) ?
+    TT : [];
 
-// type HasTail<T extends any[] | readonly any[]> =
-//     T extends ([] | [any]) ? false : true;
+type HasTail<T extends unknown[] | readonly unknown[]> =
+    T extends ([] | [unknown]) ? false : true;
 
-// type Length<T extends any[] | readonly any[]> =
-//     T['length'];
+type Length<T extends unknown[] | readonly unknown[]> =
+    T['length'];
 
-// type Prepend<S, T extends any[] | readonly any[]> =
-//     ((_: S, ...__: T) => any) extends ((..._: infer U) => any) ? U : T;
+type Prepend<S, T extends unknown[] | readonly unknown[]> =
+    ((_: S, ...__: T) => unknown) extends ((..._: infer U) => unknown) ? U : T;
 
 // //TODO: these vvv may not be necessary... (but might need it to guarantee the tuples coersion)
 
-// type HeadReadonly<T extends readonly any[]> =
-//     T extends readonly [any, ...any[]] ?
+// type HeadReadonly<T extends readonly unknown[]> =
+//     T extends readonly [unknown, ...unknown[]] ?
 //     T[0] : never;
 
-// type PrependReadonly<S, T extends readonly any[]> = Prepend<S, T>;
+// type PrependReadonly<S, T extends readonly unknown[]> = Prepend<S, T>;
 
-// type LengthReadonly<T extends readonly any[]> = Length<T>;
+// type LengthReadonly<T extends readonly unknown[]> = Length<T>;
 
-// type TailReadonly<T extends readonly any[]> = Tail<T>;
+// type TailReadonly<T extends readonly unknown[]> = Tail<T>;
 
-// type HasTailReadonly<T extends readonly any[]> = HasTail<T>;
+// type HasTailReadonly<T extends readonly unknown[]> = HasTail<T>;
 
-// type PosReadonly<I extends readonly any[]> = Pos<I>;
+// type PosReadonly<I extends readonly unknown[]> = Pos<I>;
 
-// type NextReadonly<I extends readonly any[]> = Next<I>;
+// type NextReadonly<I extends readonly unknown[]> = Next<I>;
 
 // type ReverseReadonly<
-//     T extends readonly any[],
-//     R extends readonly any[],
-//     I extends readonly any[]
+//     T extends readonly unknown[],
+//     R extends readonly unknown[],
+//     I extends readonly unknown[]
 //     > = Reverse<T, R, I>;
 
-// //type ConcatReadonly<S extends readonly any[], T extends readonly any[]> = Concat<S, T>;
+// //type ConcatReadonly<S extends readonly unknown[], T extends readonly unknown[]> = Concat<S, T>;
 
-// //type AppendReadonly<S, T extends readonly any[]> = Append<S, T>;
+// //type AppendReadonly<S, T extends readonly unknown[]> = Append<S, T>;
 
-// type Pos<I extends any[] | readonly any[]> = Length<I>;
-// type Next<I extends any[] | readonly any[]> = Prepend<any, I>;
+type Pos<I extends unknown[] | readonly unknown[]> = Length<I>;
+type Next<I extends unknown[] | readonly unknown[]> = Prepend<unknown, I>;
 
-// interface ReverseRecurser<
-//     T extends any[] | readonly any[],
-//     R extends any[] | readonly any[],
-//     I extends any[] | readonly any[]
-//     > {
-//     (): Reverse<T, Prepend<T[Pos<I>], R>, Next<I>>
-// }
+interface ReverseRecurser<
+    T extends unknown[] | readonly unknown[],
+    R extends unknown[] | readonly unknown[],
+    I extends unknown[] | readonly unknown[]
+    > {
+    (): Reverse<T, Prepend<T[Pos<I>], R>, Next<I>>
+}
 
-// type Reverse<
-//     T extends any[] | readonly any[],
-//     R extends any[] | readonly any[] = [],
-//     I extends any[] | readonly any[] = []
-//     > = Pos<I> extends Length<T> ? R : ReverseRecurser<T, R, I>;
+type Reverse<
+    T extends unknown[] | readonly unknown[],
+    R extends unknown[] | readonly unknown[] = [],
+    I extends unknown[] | readonly unknown[] = []
+    > = Pos<I> extends Length<T> ? R : ReverseRecurser<T, R, I>;
 
-// type Concat<S extends any[] | readonly any[], T extends any[] | readonly any[]> =
-//     Reverse<S> extends (infer U) ?
-//     U extends any[] ?
-//     Reverse<U, T> : never : never;
+type Concat<S extends unknown[] | readonly unknown[], T extends unknown[] | readonly unknown[]> =
+    Reverse<S> extends (infer U) ?
+    U extends unknown[] ?
+    Reverse<U, T> : never : never;
 
-// type Append<S, T extends any[] | readonly any[]> = Concat<T, [S]>;
+type Append<S, T extends unknown[] | readonly unknown[]> = Concat<T, [S]>;
 
 // interface ReverseRecurserReadonly<
-//     T extends readonly any[],
-//     R extends readonly any[],
-//     I extends readonly any[]
+//     T extends readonly unknown[],
+//     R extends readonly unknown[],
+//     I extends readonly unknown[]
 //     > {
 //     (): ReverseReadonly<T,>;
 // }
 
 // type ReverseReadonly<
-//     T extends readonly any[],
-//     R extends readonly any[] = [],
-//     I extends any[] = []
+//     T extends readonly unknown[],
+//     R extends readonly unknown[] = [],
+//     I extends unknown[] = []
 //     > =
 
 //     type inspect3a = Append<number, [string]>;
@@ -175,24 +175,24 @@
 // //         never;
 
 
-// //TODO: readonly any[]
-// interface PairListRecurser<
-//     RType,
-//     ArgsList extends unknown[],
-//     Result extends any[] = []
-//     > extends Array<SrcAccumPair<RType, unknown>> {
-//     (): PairListHelper<RType, Tail<ArgsList>, Append<SrcAccumPair<RType, Head<ArgsList>>, Result>>
-// }
+// //TODO: readonly unknown[]
+interface PairListRecurser<
+    RType,
+    ArgsList extends unknown[],
+    Result extends unknown[] = []
+    > extends Array<SrcAccumPair<RType, unknown>> {
+    (): PairListHelper<RType, Tail<ArgsList>, Append<SrcAccumPair<RType, Head<ArgsList>>, Result>>
+}
 
-// type PairListHelper<
-//     RType,
-//     ArgsList extends unknown[],
-//     Result extends any[] = []
-//     > =
-//     ArgsList extends void | null | undefined ? Result : (
-//         HasTail<ArgsList> extends true ? PairListRecurser<RType, ArgsList, Result> :
-//         Append<SrcAccumPair<RType, Head<ArgsList>>, Result>
-//     );
+type PairListHelper<
+    RType,
+    ArgsList extends unknown[],
+    Result extends unknown[] = []
+    > =
+    ArgsList extends void | null | undefined ? Result : (
+        HasTail<ArgsList> extends true ? PairListRecurser<RType, ArgsList, Result> :
+        Append<SrcAccumPair<RType, Head<ArgsList>>, Result>
+    );
 
 
 
@@ -216,14 +216,14 @@
 
 // //TODO: kill all consts and export consts (consts exported so the type-related errors will show up)
 
-// interface rebuildtuplerecurser<L extends readonly any[], result extends readonly any[]> {
+// interface rebuildtuplerecurser<L extends readonly unknown[], result extends readonly unknown[]> {
 //     (): HeadReadonly<L> extends (infer U) ? rebuildtuplerhelper<Tail<L>, Append<U, result>> : never;
 // }
 
-// type rebuildtuplerhelper<L extends readonly any[], result extends readonly any[] = []> =
+// type rebuildtuplerhelper<L extends readonly unknown[], result extends readonly unknown[] = []> =
 //     L extends undefined | null | void | [] ? result : rebuildtuplerecurser<L, result>;
 
-// type rebuildtuple<L extends readonly any[]> = rebuildtuplerhelper<L>;
+// type rebuildtuple<L extends readonly unknown[]> = rebuildtuplerhelper<L>;
 
 // type inspect = rebuildtuplerhelper<readonly [number, string]>;
 
@@ -270,23 +270,23 @@
 
 // export const testFail: ThePairList<number, [string, number, boolean]> = [strNumPair, boolNumPair, numNumPair];
 
-// interface ThePairListRecurser<R, Args extends any[], Result extends any[]> {
+// interface ThePairListRecurser<R, Args extends unknown[], Result extends unknown[]> {
 //     (): Head<Args> extends SrcAccumPair<R, infer U> ?
 //         ThePairListHelper<R, Tail<Args>, Append<Result, SrcAccumPair<R, U>>> :
 //         never;
 // }
 
-// // type ThePairListHelper<R, Args extends any[], Result extends any[] = []> =
+// // type ThePairListHelper<R, Args extends unknown[], Result extends unknown[] = []> =
 // //     HasTail<Args> extends true ?
 // //     ThePairListRecurser<R, Args, Result> :
 // //     Result;
-// interface ThePairListHelper<R, Args extends any[], Result extends any[] = []> {
+// interface ThePairListHelper<R, Args extends unknown[], Result extends unknown[] = []> {
 //     (): HasTail<Args> extends true ?
 //         ThePairListRecurser<R, Args, Result> :
 //         Result;
 // }
 
-// type ThePairList<R, L extends any[]> = ThePairListHelper<R, L>;
+// type ThePairList<R, L extends unknown[]> = ThePairListHelper<R, L>;
 // // interface GenericTupleRecurser {
 // //     ():
 // // };
@@ -303,107 +303,107 @@
 // // >;
 
 
-// interface IndexMapRecurser<
-//     L extends any[],
-//     Iter extends any[],
-//     Result extends { [_: number]: any; }
-//     > {
-//     (): IndexMapHelper<
-//         Tail<L>,
-//         Next<Iter>,
-//         Result & { [_ in Pos<Iter>]: Head<L> }
-//     >
-// }
+interface IndexMapRecurser<
+    L extends unknown[],
+    Iter extends unknown[],
+    Result extends { [_: number]: unknown; }
+    > {
+    (): IndexMapHelper<
+        Tail<L>,
+        Next<Iter>,
+        Result & { [_ in Pos<Iter>]: Head<L> }
+    >
+}
 
-// interface IndexMapHelper<
-//     L extends any[],
-//     Iter extends any[] = [],
-//     Result extends { [_: number]: any; } = {}
-//     > {
-//     (): L extends null | void | undefined | [] ?
-//         Result : IndexMapRecurser<L, Iter, Result>;
-// }
+interface IndexMapHelper<
+    L extends unknown[],
+    Iter extends unknown[] = [],
+    Result extends { [_: number]: unknown; } = {}
+    > {
+    (): L extends null | void | undefined | [] ?
+        Result : IndexMapRecurser<L, Iter, Result>;
+}
 
-// interface SrcListFromSrcAccumListRecurser<
-//     R,
-//     L extends SrcAccumPair<R, any>[],
-//     Result extends any[]
-//     > { (): SrcListFromSrcAccumListHelper<R, Tail<L>, Append<SrcInPair<R, Head<L>>, Result>>; }
+interface SrcListFromSrcAccumListRecurser<
+    R,
+    L extends SrcAccumPair<R, unknown>[],
+    Result extends unknown[]
+    > { (): SrcListFromSrcAccumListHelper<R, Tail<L>, Append<SrcInPair<R, Head<L>>, Result>>; }
 
-// type SrcListFromSrcAccumListHelper<
-//     R,
-//     L extends SrcAccumPair<R, any>[],
-//     Result extends any[] = []
-//     > = L extends null | void | undefined | [] ?
-//     Result : SrcListFromSrcAccumListRecurser<R, L, Result>;
+type SrcListFromSrcAccumListHelper<
+    R,
+    L extends SrcAccumPair<R, unknown>[],
+    Result extends unknown[] = []
+    > = L extends null | void | undefined | [] ?
+    Result : SrcListFromSrcAccumListRecurser<R, L, Result>;
 
-// interface AccumMapRecurser<
-//     R,
-//     L extends any[],
-//     Iter extends any[],
-//     Result extends { [_: number]: any; }
-//     > {
-//     (): AccumMapHelper<
-//         R,
-//         Tail<L>,
-//         Next<Iter>,
-//         Result & { [_ in Pos<Iter>]: AccumFn<R, Head<L>>; }
-//     >;
-// }
+interface AccumMapRecurser<
+    R,
+    L extends unknown[],
+    Iter extends unknown[],
+    Result extends { [_: number]: unknown; }
+    > {
+    (): AccumMapHelper<
+        R,
+        Tail<L>,
+        Next<Iter>,
+        Result & { [_ in Pos<Iter>]: AccumFn<R, Head<L>>; }
+    >;
+}
 
-// type AccumMapHelper<
-//     R,
-//     L extends any[],
-//     Iter extends any[] = [],
-//     Result extends { [_: number]: any; } = {}
-//     > = L extends null | void | undefined | [] ?
-//     Result : AccumMapRecurser<R, L, Iter, Result>;
+type AccumMapHelper<
+    R,
+    L extends unknown[],
+    Iter extends unknown[] = [],
+    Result extends { [_: number]: unknown; } = {}
+    > = L extends null | void | undefined | [] ?
+    Result : AccumMapRecurser<R, L, Iter, Result>;
 
 // // interface SrcUnionRecurser<
 // //     R,
-// //     L extends AccumSrcPair<R, any>[],
+// //     L extends AccumSrcPair<R, unknown>[],
 // //     Result
 // //     > { (): SrcUnionHelper<R, Tail<L>, Result | SrcInPair<R, Head<L>>>; };
 
 // // type SrcUnionHelper<
 // //     R,
-// //     L extends AccumSrcPair<R, any>[],
+// //     L extends AccumSrcPair<R, unknown>[],
 // //     Result = never
 // //     > = L extends undefined | null | void | [] ? Result : SrcUnionRecurser<R, L, Result>;
 
-// interface SrcUnionRecurser<
-//     R,
-//     L extends SrcAccumPair<R, any>[],
-//     Result
-//     > { (): SrcUnionHelper<R, Tail<L>, Result | SrcInPair<R, Head<L>>>; }
+interface SrcUnionRecurser<
+    R,
+    L extends SrcAccumPair<R, unknown>[],
+    Result
+    > { (): SrcUnionHelper<R, Tail<L>, Result | SrcInPair<R, Head<L>>>; }
 
 // // interface SrcUnionHelper<
 // //     R,
-// //     L extends AccumSrcPair<R, any>[],
+// //     L extends AccumSrcPair<R, unknown>[],
 // //     Result = never
 // //     > {
 // //     (): L extends undefined | null | void | [] ? Result :
 
 // //         SrcUnionRecurser<R, L, Result>;
 // // }
-// type SrcUnionHelper<
-//     R,
-//     L extends SrcAccumPair<R, any>[],
-//     Result = never
-//     > = L extends undefined | null | void | [] ? Result : SrcUnionRecurser<R, L, Result>;
+type SrcUnionHelper<
+    R,
+    L extends SrcAccumPair<R, unknown>[],
+    Result = never
+    > = L extends undefined | null | void | [] ? Result : SrcUnionRecurser<R, L, Result>;
 
 
-// // export type SrcUnion<R, L extends AccumSrcPair<R, any>[]> =
-// //     SrcUnionHelper<R, L>;
+export type SrcUnion<R, L extends AccumSrcPair<R, unknown>[]> =
+    SrcUnionHelper<R, L>;
 
 
 // type testing<R> = SrcUnion<R, [SrcAccumPair<R, number>, SrcAccumPair<R, string>]>;
 
 // //TODO: kill the test type when done...
-// type TestSrcUnion<R, L extends SrcAccumPair<R, any>[]> = L extends undefined | null | void | [] ? true : false;
+// type TestSrcUnion<R, L extends SrcAccumPair<R, unknown>[]> = L extends undefined | null | void | [] ? true : false;
 
 // type TestInstance<R> = TestSrcUnion<R, PairList<R>>;
-// type othertest<R> = TestSrcUnion<R, SrcAccumPair<R, any>[]>;
+// type othertest<R> = TestSrcUnion<R, SrcAccumPair<R, unknown>[]>;
 
 // type testhelper<R> = SrcUnionHelper<R, [SrcAccumPair<R, number>, SrcAccumPair<R, string>]>;
 // type instantiate = testhelper<boolean>;

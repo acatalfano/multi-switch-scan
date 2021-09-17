@@ -1,0 +1,25 @@
+{
+  "name": "multi-switch-scan",
+  "version": "1.0.0",
+  "description": "an rxjs operator to make a more generic switch-scan that takes unbounded source and accumulator arguments",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/acatalfano/multi-switch-scan.git"
+  },
+  "keywords": [
+    "rxjs"
+  ],
+  "author": "acatalfano <acatalfano@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/acatalfano/multi-switch-scan/issues"
+  },
+  "homepage": "https://github.com/acatalfano/multi-switch-scan#readme",
+  "devDependencies": {
+    "rxjs": "^7.3.0"
+  }
+}
